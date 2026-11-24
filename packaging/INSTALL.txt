@@ -1,0 +1,35 @@
+VYSHYVKA BAR: як встановити / how to install / как установить
+
+UA
+1. Перетягніть VYSHYVKA BAR у папку Applications.
+2. Відкрийте програму. Якщо macOS пише, що не вдалося перевірити розробника
+   (програма безкоштовна і не підписана платним сертифікатом Apple):
+   натисніть «Готово», відкрийте Системні параметри → Конфіденційність і безпека,
+   прокрутіть донизу й натисніть «Усе одно відкрити». Це потрібно один раз.
+   На macOS 12–14 також можна: правий клік по програмі → «Відкрити».
+3. У вікні привітання оберіть місто, шпалери та автозапуск.
+Повернути стандартний Touch Bar: меню ◆ угорі екрана → «Вийти».
+Видалити програму: перетягніть її з Applications у кошик.
+
+EN
+1. Drag VYSHYVKA BAR to the Applications folder.
+2. Open it. If macOS says it can't verify the developer (the app is free and
+   isn't signed with a paid Apple certificate): click Done, then go to
+   System Settings → Privacy & Security, scroll down and click "Open Anyway".
+   You only need to do this once. On macOS 12–14 you can also right-click the app and choose Open.
+3. In the welcome window, choose your city, wallpaper and launch-at-login settings.
+To restore the standard Touch Bar, open the ◆ menu at the top of the screen and choose Quit.
+To uninstall, drag the app from Applications to the Trash.
+
+RU
+1. Перетащите VYSHYVKA BAR в папку «Программы» (Applications).
+2. Откройте приложение. Если macOS пишет, что не удалось проверить разработчика
+   (приложение бесплатное и не подписано платным сертификатом Apple):
+   нажмите «Готово», откройте Системные настройки → Конфиденциальность и безопасность,
+   прокрутите вниз и нажмите «Всё равно открыть». Это нужно один раз.
+   На macOS 12–14 можно также: правый клик по приложению → «Открыть».
+3. В окне приветствия выберите город, обои и автозапуск.
+Вернуть стандартный Touch Bar: меню ◆ вверху экрана → «Выйти».
+Удалить: перетащите приложение из «Программ» в Корзину.
+
+Підходить для всіх MacBook Pro з Touch Bar 2016–2022 (Intel і Apple Silicon), macOS 12+.

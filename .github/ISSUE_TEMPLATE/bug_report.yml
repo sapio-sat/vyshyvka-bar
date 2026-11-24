@@ -1,0 +1,27 @@
+name: Bug report / Помилка
+description: Something doesn't work / Щось не працює
+labels: [bug]
+body:
+  - type: input
+    id: mac
+    attributes:
+      label: Mac model / Модель Mac
+      placeholder: MacBook Pro 13" M1 2020
+    validations: { required: true }
+  - type: input
+    id: macos
+    attributes:
+      label: macOS version / Версія macOS
+      placeholder: "15.4"
+    validations: { required: true }
+  - type: input
+    id: version
+    attributes:
+      label: VYSHYVKA BAR version
+      placeholder: "1.4.0"
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened? / Що сталося?
+      description: A photo of the Touch Bar helps a lot.
+    validations: { required: true }

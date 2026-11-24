@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VYSHYVKA BAR</title>
+<meta name="description" content="Living Ukrainian embroidery for your MacBook Pro Touch Bar. Free and open source.">
+<meta property="og:title" content="VYSHYVKA BAR">
+<meta property="og:description" content="Living Ukrainian embroidery for your MacBook Pro Touch Bar.">
+<meta property="og:image" content="img/social-preview.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="img/icon.png">
+<style>
+  :root { --bg:#08080A; --card:#121115; --ink:#EFE8E0; --cream:#D6BEA4; --red:#B42D3E; --faint:rgba(239,232,224,.55); --line:rgba(214,190,164,.18); }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--bg); color:var(--ink); font:16px/1.6 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif; -webkit-font-smoothing:antialiased; }
+  a { color:inherit; }
+  .wrap { max-width:1080px; margin:0 auto; padding:0 16px; }
+  nav { display:flex; justify-content:space-between; align-items:center; padding:18px 0; }
+  nav .brand { display:flex; gap:10px; align-items:center; font-weight:700; letter-spacing:.08em; }
+  nav .brand img { width:30px; height:30px; }
+  .langs { display:flex; gap:4px; }
+  .langs button { background:none; border:1px solid var(--line); color:var(--cream); padding:4px 10px; border-radius:999px; font:inherit; font-size:13px; cursor:pointer; }
+  .langs button.on { background:var(--red); border-color:var(--red); color:#fff; }
+  .hero { text-align:center; padding:56px 0 24px; }
+  .hero img.icon { width:132px; height:132px; filter:drop-shadow(0 18px 40px rgba(255,170,80,.18)); }
+  h1 { font-size:clamp(40px, 8vw, 76px); letter-spacing:.06em; line-height:1.05; margin:18px 0 10px; }
+  .tag { color:var(--cream); font-size:clamp(17px, 2.4vw, 22px); }
+  .cta { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin:30px 0 10px; }
+  .btn { display:inline-flex; align-items:center; gap:8px; padding:14px 26px; border-radius:14px; font-weight:600; text-decoration:none; }
+  .btn.primary { background:var(--red); color:#fff; box-shadow:0 10px 30px rgba(180,45,62,.35); }
+  .btn.ghost { border:1px solid var(--line); color:var(--ink); }
+  .meta { color:var(--faint); font-size:13.5px; }
+  .bar { margin:40px auto 0; border-radius:16px; padding:10px; background:#020203; border:1px solid rgba(255,255,255,.1); box-shadow:0 30px 80px rgba(0,0,0,.6); }
+  .bar img, .bar video { display:block; width:100%; border-radius:6px; }
+  .stitch { height:12px; margin:72px 0 48px; background:
+     repeating-linear-gradient(45deg, transparent 0 5px, var(--red) 5px 6.5px, transparent 6.5px 12px),
+     repeating-linear-gradient(-45deg, transparent 0 5px, var(--red) 5px 6.5px, transparent 6.5px 12px);
+     background-size:12px 12px; opacity:.55; }
+  h2 { font-size:clamp(26px, 4vw, 36px); margin-bottom:24px; text-align:center; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:14px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:20px; }
+  .card b { display:block; margin-bottom:6px; font-size:16.5px; }
+  .card span { color:var(--faint); font-size:14.5px; }
+  .shots { display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:18px; }
+  .shots img { width:100%; border-radius:14px; border:1px solid var(--line); display:block; }
+  .shots figcaption { color:var(--faint); font-size:13.5px; text-align:center; margin-top:8px; }
+  .wide img { width:100%; border-radius:16px; border:1px solid var(--line); display:block; }
+  ol.steps { counter-reset:s; list-style:none; display:grid; gap:12px; max-width:760px; margin:0 auto; }
+  ol.steps li { counter-increment:s; background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px 18px 16px 64px; position:relative; }
+  ol.steps li::before { content:counter(s); position:absolute; left:18px; top:14px; width:30px; height:30px; border-radius:50%; background:var(--red); color:#fff; display:grid; place-items:center; font-weight:700; }
+  .note { max-width:760px; margin:16px auto 0; color:var(--faint); font-size:14px; text-align:center; }
+  footer { color:var(--faint); font-size:13.5px; text-align:center; padding:60px 0 40px; }
+  code { background:rgba(255,255,255,.07); padding:1px 6px; border-radius:6px; font-size:.92em; }
+  @media (max-width:560px) { ol.steps li { padding-left:56px; } .hero { padding-top:28px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav>
+    <div class="brand"><img src="img/icon.png" alt="">VYSHYVKA BAR</div>
+    <div class="langs">
+      <button data-l="uk">УКР</button><button data-l="ru">РУС</button><button data-l="en">ENG</button>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <img class="icon" src="img/icon.png" alt="VYSHYVKA BAR">
+    <h1>VYSHYVKA BAR</h1>
+    <p class="tag" data-t="tag"></p>
+    <div class="cta">
+      <a class="btn primary" id="dl" href="https://github.com/sapio-sat/vyshyvka-bar/releases/latest/download/VYSHYVKA-BAR.dmg" data-t="download"></a>
+      <a class="btn ghost" href="https://github.com/sapio-sat/vyshyvka-bar" data-t="github"></a>
+    </div>
+    <p class="meta" data-t="meta"></p>
+    <div class="bar"><video src="img/touchbar-demo.mp4" poster="img/touchbar.png" autoplay muted loop playsinline></video></div>
+  </section>
+
+  <div class="stitch"></div>
+  <h2 data-t="featuresTitle"></h2>
+  <div class="grid" id="features"></div>
+
+  <div class="stitch"></div>
+  <h2 data-t="forecastTitle"></h2>
+  <div class="bar" style="margin-top:0"><img src="img/forecast.png" alt=""></div>
+
+  <div class="stitch"></div>
+  <div class="shots">
+    <figure><img id="welcomeImg" src="img/welcome-uk.png" alt=""><figcaption data-t="capWelcome"></figcaption></figure>
+    <figure><img src="img/weather-window.png" alt=""><figcaption data-t="capWeather"></figcaption></figure>
+    <figure><img src="img/bar-items.png" alt=""><figcaption data-t="capItems"></figcaption></figure>
+    <figure><img src="img/losses-panel.png" alt=""><figcaption data-t="capLosses"></figcaption></figure>
+  </div>
+
+  <div class="stitch"></div>
+  <h2 data-t="wallTitle"></h2>
+  <figure class="wide"><img src="img/wallpaper.png" alt=""></figure>
+
+  <div class="stitch"></div>
+  <h2 data-t="installTitle"></h2>
+  <ol class="steps" id="steps"></ol>
+  <p class="note" data-t="macs"></p>
+
+  <footer>
+    <p data-t="footer"></p>
+    <p style="margin-top:8px">MIT · <a href="https://github.com/sapio-sat/vyshyvka-bar">GitHub</a> · Open-Meteo (CC BY 4.0)</p>
+  </footer>
+</div>
+
+<script>
+const T = {
+  uk: {
+    tag: "Жива українська вишивка на Touch Bar вашого MacBook Pro",
+    download: "Завантажити для Mac", github: "Код на GitHub",
+    meta: "Безкоштовно · відкритий код · macOS 12+ · Intel і Apple Silicon",
+    featuresTitle: "Усе потрібне — просто у візерунку",
+    features: [
+      ["Жива вишивка", "Нитки, рози, хрестик і веселковий тризуб, що повільно «дихають»."],
+      ["Кнопки", "esc, скріншот, яскравість і гучність з індикатором на екрані."],
+      ["Погода", "Будь-яке місто світу. Тап — прогноз на 7 днів просто на Touch Bar."],
+      ["Батарея", "Біла чи жовта в енергозбереженні. Тап — перемкнути режим."],
+      ["Час і мова", "Тап по часу відкриває Календар, по мові — перемикає розкладку."],
+      ["Тризуб", "Тап — зведення Генштабу ЗСУ і день повномасштабної війни."],
+      ["Живі шпалери", "Анімований робочий стіл у тому ж стилі. Ваші шпалери не змінюються."],
+      ["Свій порядок", "Переставляйте й ховайте будь-які елементи."],
+      ["Три мови", "Українська, русский, English."]
+    ],
+    forecastTitle: "Прогноз — одним дотиком",
+    capWelcome: "Вікно привітання", capWeather: "Погода: 24 години й 7 днів", capItems: "Елементи панелі", capLosses: "Зведення Генштабу ЗСУ",
+    wallTitle: "Живі шпалери в тому ж стилі",
+    installTitle: "Встановлення за хвилину",
+    steps: [
+      "Завантажте <b>VYSHYVKA-BAR.dmg</b> і перетягніть програму в <b>Applications</b>.",
+      "Відкрийте її. Якщо macOS пише, що не вдалося перевірити розробника, — <b>Системні параметри → Конфіденційність і безпека → Усе одно відкрити</b>. Лише один раз.",
+      "Оберіть місто, шпалери й автозапуск у вікні привітання. Готово!"
+    ],
+    macs: "Усі MacBook Pro з Touch Bar 2016–2022 (Intel і Apple Silicon). Стандартний Touch Bar повертається через ◆ → Вийти.",
+    footer: "Створив Nikola Frank в Україні. Слава Україні!"
+  },
+  ru: {
+    tag: "Живая украинская вышивка на Touch Bar вашего MacBook Pro",
+    download: "Скачать для Mac", github: "Код на GitHub",
+    meta: "Бесплатно · открытый код · macOS 12+ · Intel и Apple Silicon",
+    featuresTitle: "Всё нужное — прямо в узоре",
+    features: [
+      ["Живая вышивка", "Нити, розы, крестик и радужный тризуб, которые медленно «дышат»."],
+      ["Кнопки", "esc, скриншот, яркость и громкость с индикатором на экране."],
+      ["Погода", "Любой город мира. Тап — прогноз на 7 дней прямо на Touch Bar."],
+      ["Батарея", "Белая или жёлтая в энергосбережении. Тап — переключить режим."],
+      ["Время и язык", "Тап по времени открывает Календарь, по языку — переключает раскладку."],
+      ["Тризуб", "Тап — сводка Генштаба ВСУ и день полномасштабной войны."],
+      ["Живые обои", "Анимированный рабочий стол в том же стиле. Ваши обои не меняются."],
+      ["Свой порядок", "Переставляйте и скрывайте любые элементы."],
+      ["Три языка", "Українська, русский, English."]
+    ],
+    forecastTitle: "Прогноз — одним касанием",
+    capWelcome: "Окно приветствия", capWeather: "Погода: 24 часа и 7 дней", capItems: "Элементы панели", capLosses: "Сводка Генштаба ВСУ",
+    wallTitle: "Живые обои в том же стиле",
+    installTitle: "Установка за минуту",
+    steps: [
+      "Скачайте <b>VYSHYVKA-BAR.dmg</b> и перетащите приложение в <b>Applications</b>.",
+      "Откройте его. Если macOS пишет, что не удалось проверить разработчика, — <b>Системные настройки → Конфиденциальность и безопасность → Всё равно открыть</b>. Только один раз.",
+      "Выберите город, обои и автозапуск в окне приветствия. Готово!"
+    ],
+    macs: "Все MacBook Pro с Touch Bar 2016–2022 (Intel и Apple Silicon). Стандартный Touch Bar возвращается через ◆ → Выйти.",
+    footer: "Создал Nikola Frank в Украине. Слава Украине!"
+  },
+  en: {
+    tag: "Living Ukrainian embroidery for your MacBook Pro Touch Bar",
+    download: "Download for Mac", github: "Code on GitHub",
+    meta: "Free · open source · macOS 12+ · Intel & Apple Silicon",
+    featuresTitle: "Everything you need, woven into the pattern",
+    features: [
+      ["Living embroidery", "Threads, roses, cross-stitch and a rainbow trident that slowly breathe."],
+      ["Controls", "esc, screenshot, brightness and volume with an on-screen indicator."],
+      ["Weather", "Any city in the world. Tap for a 7-day forecast right on the Touch Bar."],
+      ["Battery", "White, or yellow in Low Power Mode. Tap to toggle the mode."],
+      ["Time & language", "Tap the time to open Calendar, the language to switch input."],
+      ["Trident", "Tap for the Ukrainian General Staff report and the day of the war."],
+      ["Live wallpaper", "A matching animated desktop. Your own wallpaper is never changed."],
+      ["Your layout", "Reorder or hide any item."],
+      ["Three languages", "Українська, русский, English."]
+    ],
+    forecastTitle: "The forecast, one tap away",
+    capWelcome: "Welcome window", capWeather: "Weather: 24 hours and 7 days", capItems: "Bar items", capLosses: "General Staff report",
+    wallTitle: "Matching live wallpaper",
+    installTitle: "Install in a minute",
+    steps: [
+      "Download <b>VYSHYVKA-BAR.dmg</b> and drag the app to <b>Applications</b>.",
+      "Open it. If macOS says it can't verify the developer, go to <b>System Settings → Privacy & Security → Open Anyway</b>. Only once.",
+      "Pick your city, wallpaper and launch at login in the welcome window. Done!"
+    ],
+    macs: "Every MacBook Pro with a Touch Bar, 2016–2022 (Intel & Apple Silicon). Get the standard Touch Bar back with ◆ → Quit.",
+    footer: "Made by Nikola Frank in Ukraine. Slava Ukraini!"
+  }
+};
+function pick() {
+  try { const s = localStorage.getItem("lang"); if (s && T[s]) return s; } catch (e) {}
+  const n = (navigator.language || "en").slice(0, 2);
+  return n === "uk" ? "uk" : (n === "ru" || n === "be") ? "ru" : "en";
+}
+function apply(l) {
+  const t = T[l];
+  document.documentElement.lang = l;
+  document.querySelectorAll("[data-t]").forEach(e => { e.innerHTML = t[e.dataset.t]; });
+  document.getElementById("features").innerHTML = t.features.map(([b, s]) => `<div class="card"><b>${b}</b><span>${s}</span></div>`).join("");
+  document.getElementById("steps").innerHTML = t.steps.map(s => `<li>${s}</li>`).join("");
+  document.getElementById("welcomeImg").src = `img/welcome-${l}.png`;
+  document.querySelectorAll(".langs button").forEach(b => b.classList.toggle("on", b.dataset.l === l));
+  try { localStorage.setItem("lang", l); } catch (e) {}
+}
+document.querySelectorAll(".langs button").forEach(b => b.addEventListener("click", () => apply(b.dataset.l)));
+apply(pick());
+</script>
+</body>
+</html>
