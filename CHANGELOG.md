@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.1 — 2026-11-25
+- Low Power Mode: the password is asked only once. If the first password prompt was cancelled, the app offers the no-password option again on the next tap instead of asking for a password every time.
+- Allowing the no-password option now installs the rule and switches the mode in a single password prompt.
+
 ## 1.4.0 — 2026-11-24
 - Interface in three languages: Українська, Русский, English (follows the system or choose in Settings).
 - General Staff report translated into all three languages.

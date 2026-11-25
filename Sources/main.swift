@@ -191,8 +191,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSTouchBarDelegate, NS
     }
     func toggleLowPower() {
         let refresh: () -> Void = { [weak self] in self?.bar.battery = BatteryMonitor.read(); self?.lowPowerItem?.state = LowPower.passwordless ? .on : .off }
-        if LowPower.askOnceIfNeeded() {
-            LowPower.enablePasswordless { _ in refresh(); LowPower.toggle(done: refresh) }
+        if LowPower.askIfNeeded() {
+            // Одне вікно пароля: правило + перемикання. Якщо скасовано — наступного тапу запропонуємо знову.
+            LowPower.enablePasswordless(alsoSwitchTo: !LowPower.isOn) { _ in refresh() }
         } else {
             LowPower.toggle(done: refresh)
         }
