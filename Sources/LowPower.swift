@@ -9,9 +9,9 @@ enum LowPower {
 
     static var isOn: Bool { ProcessInfo.processInfo.isLowPowerModeEnabled }
     static var passwordless: Bool { FileManager.default.fileExists(atPath: rulePath) }
-    /// Користувач свідомо обрав «Питати пароль щоразу». Стара позначка lowPowerAsked ігнорується:
-    /// у 1.4.0 вона ставилась ще до відповіді, і скасоване вікно пароля назавжди вимикало пропозицію.
-    private static let declinedKey = "lowPowerDeclined"
+    /// Користувач сам прибрав дозвіл у меню ◆ — тоді пароль питається щоразу, як він і хотів.
+    /// (Позначки lowPowerAsked/lowPowerDeclined зі старих версій ігноруються.)
+    private static let declinedKey = "lowPowerRuleRemoved"
     static var declined: Bool {
         get { UserDefaults.standard.bool(forKey: declinedKey) }
         set { UserDefaults.standard.set(newValue, forKey: declinedKey) }
@@ -34,39 +34,52 @@ enum LowPower {
         return run("/usr/bin/osascript", ["-e", "do shell script \"\(esc(shell))\" with prompt \"\(esc(prompt))\" with administrator privileges"]) == 0
     }
 
-    /// Перемкнути (у фоні). Без правила — з паролем, з правилом — одразу.
+    /// Shell-команда, що (після перевірки visudo) ставить правило «без пароля». nil — якщо ім'я користувача незвичне.
+    private static func installScript() -> (String, String)? {
+        let user = NSUserName()
+        guard user.range(of: "^[A-Za-z0-9._-]+$", options: .regularExpression) != nil else { return nil }
+        let rule = "# VYSHYVKA BAR: Low Power Mode without a password (only these two commands)\n"
+            + "\(user) ALL=(root) NOPASSWD: \(pmset0), \(pmset1)\n"
+        let tmp = NSTemporaryDirectory() + "vyshyvka-lowpower.sudoers"
+        do { try rule.write(toFile: tmp, atomically: true, encoding: .utf8) } catch { return nil }
+        return ("/bin/mkdir -p /private/etc/sudoers.d && /usr/sbin/visudo -cf '\(tmp)' && /usr/bin/install -m 0440 -o root -g wheel '\(tmp)' '\(rulePath)'", tmp)
+    }
+
+    /// Перемкнути (у фоні). Якщо правило працює — одразу, без пароля.
+    /// Якщо ні — macOS питає пароль ОДИН раз: тією ж командою ставиться правило і перемикається режим,
+    /// тож далі пароль більше не потрібен.
     static func toggle(done: @escaping () -> Void) {
-        let on = !isOn
+        let on = !isOn, cmd = on ? pmset1 : pmset0
         DispatchQueue.global(qos: .userInitiated).async {
-            var ok = false
-            if passwordless, sudoWorks(on ? pmset1 : pmset0) { ok = run("/usr/bin/sudo", ["-n"] + (on ? pmset1 : pmset0).split(separator: " ").map(String.init)) == 0 }
+            var ok = false, how = "sudo"
+            if sudoWorks(cmd) { ok = run("/usr/bin/sudo", ["-n"] + cmd.split(separator: " ").map(String.init)) == 0 }
             if !ok {
-                ok = admin(on ? pmset1 : pmset0, prompt: on ? L.t("VYSHYVKA BAR вмикає режим енергозбереження.", "VYSHYVKA BAR is turning on Low Power Mode.")
-                                                           : L.t("VYSHYVKA BAR вимикає режим енергозбереження.", "VYSHYVKA BAR is turning off Low Power Mode."))
+                let prompt = on ? L.t("VYSHYVKA BAR вмикає режим енергозбереження.", "VYSHYVKA BAR is turning on Low Power Mode.")
+                                : L.t("VYSHYVKA BAR вимикає режим енергозбереження.", "VYSHYVKA BAR is turning off Low Power Mode.")
+                if !declined, let (install, tmp) = installScript() {
+                    how = "install+switch"
+                    // Режим перемикається, навіть якщо правило з якоїсь причини не стало.
+                    ok = admin("{ \(install); } ; \(cmd)", prompt: prompt + " " + L.t("Пароль потрібен лише цього разу.", "The password is needed only this once."))
+                    try? FileManager.default.removeItem(atPath: tmp)
+                } else {
+                    how = "admin"
+                    ok = admin(cmd, prompt: prompt)
+                }
             }
-            hwLog.notice("low power → \(on): \(ok ? "ok" : "failed"), passwordless=\(passwordless)")
+            hwLog.notice("low power → \(on, privacy: .public): \(ok ? "ok" : "failed", privacy: .public) via \(how, privacy: .public), rule works: \(sudoWorks(pmset1), privacy: .public)")
             DispatchQueue.main.async(execute: done)
         }
     }
 
-    /// Встановити правило «без пароля» (macOS один раз питає пароль). Перевіряється visudo перед встановленням.
-    /// `alsoSwitchTo` — одразу ж перемкнути режим тією самою командою, щоб пароль питався рівно один раз.
-    static func enablePasswordless(alsoSwitchTo: Bool? = nil, done: @escaping (Bool) -> Void) {
-        let user = NSUserName()
-        guard user.range(of: "^[A-Za-z0-9._-]+$", options: .regularExpression) != nil else { return done(false) }
-        let rule = "# VYSHYVKA BAR: перемикання режиму енергозбереження без пароля (лише ці дві команди)\n"
-            + "\(user) ALL=(root) NOPASSWD: \(pmset0), \(pmset1)\n"
-        let tmp = NSTemporaryDirectory() + "vyshyvka-lowpower.sudoers"
-        do { try rule.write(toFile: tmp, atomically: true, encoding: .utf8) } catch { return done(false) }
+    /// Пункт меню: поставити правило «без пароля» (macOS один раз питає пароль).
+    static func enablePasswordless(done: @escaping (Bool) -> Void) {
+        guard let (install, tmp) = installScript() else { return done(false) }
         DispatchQueue.global(qos: .userInitiated).async {
-            var sh = "/bin/mkdir -p /private/etc/sudoers.d && /usr/sbin/visudo -cf '\(tmp)' && /usr/bin/install -m 0440 -o root -g wheel '\(tmp)' '\(rulePath)'"
-            if let on = alsoSwitchTo { sh += " && " + (on ? pmset1 : pmset0) }
-            let ok = admin(sh,
-                           prompt: L.t("VYSHYVKA BAR: дозволити перемикати енергозбереження без пароля.",
-                                       "VYSHYVKA BAR: allow switching Low Power Mode without a password."))
+            let ok = admin(install, prompt: L.t("VYSHYVKA BAR: дозволити перемикати енергозбереження без пароля.",
+                                                "VYSHYVKA BAR: allow switching Low Power Mode without a password."))
             try? FileManager.default.removeItem(atPath: tmp)
-            hwLog.notice("low power passwordless rule installed: \(ok), works: \(ok && sudoWorks(pmset1))")
             if ok { declined = false }
+            hwLog.notice("low power rule installed from menu: \(ok, privacy: .public)")
             DispatchQueue.main.async { done(ok) }
         }
     }
@@ -77,21 +90,5 @@ enum LowPower {
             if ok { declined = true }   // прибрали свідомо — не пропонувати знову
             DispatchQueue.main.async { done(ok) }
         }
-    }
-
-    /// Тап по батареї без правила: запропонувати дозволити «без пароля».
-    /// Питає, доки правило не встановлено, — хіба що користувач свідомо обрав «Питати пароль щоразу».
-    static func askIfNeeded() -> Bool {
-        guard !passwordless, !declined else { return false }
-        NSApp.activate(ignoringOtherApps: true)
-        let a = NSAlert()
-        a.messageText = L.t("Перемикати енергозбереження без пароля?", "Switch Low Power Mode without a password?")
-        a.informativeText = L.t("macOS дозволяє змінювати цей режим лише адміністратору, тому без дозволу пароль питатиметься щоразу.\n\nЯкщо дозволити, macOS один раз попросить пароль і додасть вузьке правило: вашому користувачу без пароля дозволено лише вмикати й вимикати енергозбереження, більше нічого. Прибрати можна в меню ◆.",
-                                "macOS only lets administrators change this mode, so without permission you'll be asked for a password every time.\n\nIf you allow it, macOS asks for your password once and adds a narrow rule: your account may switch Low Power Mode on and off without a password, nothing else. You can remove it from the ◆ menu.")
-        a.addButton(withTitle: L.t("Дозволити", "Allow"))
-        a.addButton(withTitle: L.t("Питати пароль щоразу", "Ask every time"))
-        let allow = a.runModal() == .alertFirstButtonReturn
-        if !allow { declined = true }
-        return allow
     }
 }

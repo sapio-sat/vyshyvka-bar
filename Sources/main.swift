@@ -30,6 +30,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSTouchBarDelegate, NS
     var welcome: WelcomeWindow?
 
     func applicationDidFinishLaunching(_: Notification) {
+        watchForUpdate()
         // Accessibility нужен только esc и скриншоту. Без системного диалога при каждом запуске:
         // только проверка; тап по приглушённым esc/скриншоту откроет нужный раздел настроек.
         bar.accessibilityTrusted = AXIsProcessTrusted()
@@ -191,12 +192,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSTouchBarDelegate, NS
     }
     func toggleLowPower() {
         let refresh: () -> Void = { [weak self] in self?.bar.battery = BatteryMonitor.read(); self?.lowPowerItem?.state = LowPower.passwordless ? .on : .off }
-        if LowPower.askIfNeeded() {
-            // Одне вікно пароля: правило + перемикання. Якщо скасовано — наступного тапу запропонуємо знову.
-            LowPower.enablePasswordless(alsoSwitchTo: !LowPower.isOn) { _ in refresh() }
-        } else {
-            LowPower.toggle(done: refresh)
-        }
+        LowPower.toggle(done: refresh)
     }
     @objc func togglePasswordless() {
         let refresh: (Bool) -> Void = { [weak self] _ in self?.lowPowerItem?.state = LowPower.passwordless ? .on : .off }
@@ -211,6 +207,24 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSTouchBarDelegate, NS
     func menuNeedsUpdate(_: NSMenu) {
         wallpaperItem?.state = wallpaper.enabled ? .on : .off
         lowPowerItem?.state = LowPower.passwordless ? .on : .off
+    }
+
+    /// Якщо програму замінили новою версією (перетягнули з DMG поверх старої), стара копія ще працює.
+    /// Помічаємо зміну версії на диску й перезапускаємося — щоб користувач одразу отримав виправлення.
+    private var updateTimer: Timer?
+    private func watchForUpdate() {
+        let url = Bundle.main.bundleURL
+        let plist = url.appendingPathComponent("Contents/Info.plist")
+        func version() -> String? { (NSDictionary(contentsOf: plist)?["CFBundleShortVersionString"] as? String) }
+        let running = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
+        updateTimer = Timer.scheduledTimer(withTimeInterval: 20, repeats: true) { _ in
+            guard let disk = version(), let running, disk != running else { return }
+            hwLog.notice("app replaced on disk (\(running, privacy: .public) → \(disk, privacy: .public)), relaunching")
+            let p = Process(); p.executableURL = URL(fileURLWithPath: "/bin/sh")
+            p.arguments = ["-c", "sleep 2; /usr/bin/open \"$0\"", url.path]
+            try? p.run()
+            NSApp.terminate(nil)
+        }
     }
 
     func applicationWillTerminate(_: Notification) { NSTouchBar.dismissSystemModalTouchBar(touchBar) }

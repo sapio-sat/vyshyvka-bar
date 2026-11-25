@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.2 — 2026-11-25
+- Low Power Mode: no extra dialog. The first switch asks for the password once and, in the same step, allows switching without a password from then on.
+- After you replace the app with a new version, the running copy restarts itself so the update takes effect immediately.
+
 ## 1.4.1 — 2026-11-25
 - Low Power Mode: the password is asked only once. If the first password prompt was cancelled, the app offers the no-password option again on the next tap instead of asking for a password every time.
 - Allowing the no-password option now installs the rule and switches the mode in a single password prompt.
